@@ -1,1 +1,48 @@
-/* COming soon! */
+/* Coming soon! */
+
+body{
+  font-size: 12pt;
+  font-family: verdana, sans-serif;
+  margin: 0px;
+  padding: 0px;
+}
+
+header{
+  background-color: black;
+  color: white;
+  padding: 1em;
+}
+
+fieldset{
+  border: 1px dotted red;
+}
+
+legend{
+  font-size: 2em;
+  color: red;
+  font-weight: bold;
+}
+
+input{
+  font-size: 1.2em;
+  padding: .5em;
+  font-weight: bold;
+  border-radius: 10px;
+}
+
+#target{
+  margin: 5px;
+}
+
+.doc{
+  width:31%;
+  background-color: #ccc;
+  margin: 0px 1em 1em 0px;
+  padding: .25em;
+  border-radius: 5px;
+}
+
+.doc .data_source{
+  font-size: 10px;
+  margin-left: 1em;
+}

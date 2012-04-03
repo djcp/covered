@@ -30,6 +30,16 @@ input{
   border-radius: 10px;
 }
 
+.filter{
+  margin: 5px 3px;
+  display: inline-block;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #e4e4e4;
+  color: black;
+}
+
 #target{
   margin: 5px;
 }
@@ -45,4 +55,9 @@ input{
 .doc .data_source{
   font-size: 10px;
   margin-left: 1em;
+}
+
+.doc .cover{
+  float: left;
+  margin: 0px 5px 0px 0px;
 }

@@ -179,13 +179,18 @@ $(document).ready(function(){
           $('#messages').html('None found.');
         } else {
           $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: '*'}).html('Show all'));
-          $('#meta').append((parseInt(json.start) + 1) + ' to ' + (parseInt(json.start) + parseInt(json.limit)) + ' of ' + json.num_found + ' found');
 
-          if(parseInt(json.start) != 0){
-            $('#meta').prepend($('<span class="paginate" id="prev" />').attr('data_pagination_start',parseInt(json.start) - parseInt(json.limit)).html('&laquo; Previous'));
+          var start = parseInt(json.start);
+          var limit = parseInt(json.limit);
+          var num_found = parseInt(json.num_found);
+
+          $('#meta').append((start + 1) + ' to ' + ((num_found < (start + limit)) ? num_found : (start + limit) )+ ' of ' + num_found + ' found');
+
+          if(start != 0){
+            $('#meta').prepend($('<span class="paginate" id="prev" />').attr('data_pagination_start',start - limit).html('&laquo; Previous'));
           }
-          if((parseInt(json.start) + parseInt(json.limit)) < parseInt(json.num_found)){
-            $('#meta').append($('<span class="paginate" id="next" />').attr('data_pagination_start',parseInt(json.start) + parseInt(json.limit)).html('Next &raquo;'));
+          if((start + limit) < num_found){
+            $('#meta').append($('<span class="paginate" id="next" />').attr('data_pagination_start',start + limit).html('Next &raquo;'));
           }
           
         }

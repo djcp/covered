@@ -99,6 +99,7 @@ $.extend({
         $('<span class="searchable_term" />').attr({data_term_value: $('#term').val(), data_term_searchable: $('#searchable_select').val()}).html('<span class="term_field">' + $('#searchable_select').val() + ' </span>: ' + $('#term').val() + "<sup> X </sup>")
       );
       $('form#query')[0].reset();
+      $('#start').val(0);
       $('#term').focus();
     });
   },
@@ -111,9 +112,19 @@ $.extend({
     return query;
   },
 
+  initPagination: function(){
+    $('.paginate').live({
+      click: function(){
+        $('#start').val($(this).attr('data_pagination_start'));
+        $('form#query').submit();
+      }
+    });
+  }
+
 });
 
 $(document).ready(function(){
+  $.initPagination();
 
   $('.searchable_term sup').live({
     click: function(){
@@ -136,6 +147,8 @@ $(document).ready(function(){
       return false;
     }
 
+    query += "start=" + $('#start').val() + '&';
+
     $.ajax({
       cache: true,
       url: $.apiEndpoint() + 'item',
@@ -146,6 +159,7 @@ $(document).ready(function(){
         $('#target').html('');
         $('#target').isotope('destroy');
         $('#facets').html('');
+        $('#meta').html('');
       },
       complete: function(){
         $('#submit').val('go!');
@@ -165,7 +179,15 @@ $(document).ready(function(){
           $('#messages').html('None found.');
         } else {
           $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: '*'}).html('Show all'));
-          $('#meta').append(json.num_found + ' found');
+          $('#meta').append((parseInt(json.start) + 1) + ' to ' + (parseInt(json.start) + parseInt(json.limit)) + ' of ' + json.num_found + ' found');
+
+          if(parseInt(json.start) != 0){
+            $('#meta').prepend($('<span class="paginate" id="prev" />').attr('data_pagination_start',parseInt(json.start) - parseInt(json.limit)).html('&laquo; Previous'));
+          }
+          if((parseInt(json.start) + parseInt(json.limit)) < parseInt(json.num_found)){
+            $('#meta').append($('<span class="paginate" id="next" />').attr('data_pagination_start',parseInt(json.start) + parseInt(json.limit)).html('Next &raquo;'));
+          }
+          
         }
       }
     });

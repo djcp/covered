@@ -2,6 +2,35 @@ $.extend({
 
   apiEndpoint: function(){ return 'http://api.dp.la/dev/' },
 
+  searchables: function(){
+    return {
+      keyword: 'All fields',
+      title: 'Title',
+      title_keyword: 'Title, keyword',
+      creator: 'Creator',
+      creator_keyword: 'Creator, keyword',
+      date: 'Date',
+      description: 'Description',
+      description_keyword: 'Description, keyword',
+      subject: 'Subject',
+      subject_keyword: 'Subject, keyword',
+      publisher: 'Publisher',
+      language: 'Language',
+      id_isbn: 'ISBN',
+      id_oclc: 'OCLC',
+      id_lccn: 'LCCN',
+      id_inst: 'Partner Id',
+      call_num: 'Call Number',
+      height: 'Height',
+      page_count: 'Page Count',
+      relation: 'Relation',
+      content_link: 'Context Link',
+      rights: 'Rights',
+      data_source: 'Data Source',
+      resource_type: 'Resource Type'
+    };
+  },
+
   constructDoc: function(d,facets){
     var node = $('<div />').attr({class: 'doc ' + d.data_source, id: 'doc-' + d.id});
     if(d.id_isbn != undefined){
@@ -29,17 +58,46 @@ $.extend({
     });
     // relayout as cover images may've effected container height.
     setTimeout(function(){$('#target').isotope('reLayout')}, 500);
+  },
+
+  initSearchables: function(){
+    $('#searchables').append('<select id="searchable_select" />');
+    $.each($.searchables(),function(i,el){
+      $('#searchables select').append($('<option/>').attr({value: i}).html(el));
+    });
+  },
+
+  formatQuery: function(){
+    var query = {facet: 'subject'};
+    $('.searchable_term').each(function(){
+      query[$(this).attr('data_term_searchable')] = $(this).attr('data_term_value');
+    });
+    return query;
   }
 
 });
 
 $(document).ready(function(){
+  $.initSearchables();
+
+  $('#add_searchable').click(function(e){
+    e.preventDefault();
+    if($('#term').val() == ''){
+      return alert('please enter a term');
+    }
+    $('#terms').append(
+      $('<span class="searchable_term" />').attr({data_term_value: $('#term').val(), data_term_searchable: $('#searchable_select').val()}).html('<span class="term_field">' + $('#searchable_select').val() + ' </span>: ' + $('#term').val())
+    );
+
+  });
+
   $('#keyword').focus();
   $('form#query').submit(function(e){
     e.preventDefault();
+    var query = $.formatQuery();
     $.ajax({
       url: $.apiEndpoint() + 'item',
-      data: {search_type: 'keyword', query: $('#keyword').val(), facet: 'subject'},
+      data: query,
       dataType: 'jsonp',
       beforeSend: function(){
         $('#submit').val('please wait . . .');

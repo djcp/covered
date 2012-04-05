@@ -23,11 +23,25 @@ legend{
   font-weight: bold;
 }
 
-input{
+input, select{
   font-size: 1.2em;
   padding: .5em;
   font-weight: bold;
   border-radius: 10px;
+}
+
+.searchable_term{
+  display: inline-block;
+  background: white;
+  color: black;
+  border: 2px solid #ccc;
+  margin: .25em;
+  font-size: 1em;
+  padding: 5px;
+}
+
+.term_field{
+  font-weight: bold;
 }
 
 #nope{
@@ -44,6 +58,14 @@ input{
   border-radius: 5px;
   background-color: #e4e4e4;
   color: black;
+}
+
+#add_searchable{
+  font-size: 1.5em;
+}
+
+#add_searchable:hover{
+  cursor: pointer;
 }
 
 #target{

@@ -93,9 +93,9 @@ $.extend({
   },
 
   formatQuery: function(){
-    var query = {facet: 'subject'};
+    var query = 'facet:subject&';
     $('.searchable_term').each(function(){
-      query[$(this).attr('data_term_searchable')] = $(this).attr('data_term_value');
+      query += 'filter=' + $(this).attr('data_term_searchable') + ':' + $(this).attr('data_term_value') + '&';
     });
     return query;
   }

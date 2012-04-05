@@ -111,7 +111,15 @@ input, select{
   border-radius: 5px;
   clear: both;
   font-size: 10pt;
+  cursor:pointer;
 }
+	.doc:hover{
+		background-color:#999;
+	}
+	.doc img{
+			float:left;
+			margin:0 5px 5px 0;
+		}
 
 .doc .data_source{
   font-size: 10px;

@@ -11,7 +11,7 @@ $.extend({
     }
     $(node).append(d.title);
     $(node).append($('<span />').attr({class: 'data_source'}).html(d.data_source));
-    facets[d.data_source] = 1;
+    facets[d.data_source] = (facets[d.data_source] == undefined) ? 1 : (facets[d.data_source] + 1);
     return node;
   },
 
@@ -46,6 +46,7 @@ $(document).ready(function(){
         $('#target').html('');
         $('#target').isotope('destroy');
         $('#facets').html('');
+        $('#nope').remove();
       },
       complete: function(){
         $('#submit').val('go!');
@@ -59,9 +60,12 @@ $(document).ready(function(){
           $('#target').isotope('insert',$.constructDoc(el,facets));
         });
         $.each(facets, function(key,val){
-          $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: "." + key}).html(key));
+          $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: "." + key}).html(key + ' - ' + val));
         });
         $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: '*'}).html('Show all'));
+        if(json.docs.length == 0){
+          $('#submit').after('<span id="nope">None found.</span>');
+        }
       }
     });
   });

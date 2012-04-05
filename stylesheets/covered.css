@@ -18,13 +18,13 @@ fieldset{
 }
 
 legend{
-  font-size: 2em;
+  font-size: 1.5em;
   color: red;
   font-weight: bold;
 }
 
 input, select{
-  font-size: 1.2em;
+  font-size: 1em;
   padding: .5em;
   font-weight: bold;
   border-radius: 10px;
@@ -61,6 +61,7 @@ input, select{
 }
 
 #meta{
+  text-align: center;
   margin-left: 1em;
 }
 

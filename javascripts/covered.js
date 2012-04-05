@@ -96,6 +96,7 @@ $(document).ready(function(){
     e.preventDefault();
     var query = $.formatQuery();
     $.ajax({
+      cache: true,
       url: $.apiEndpoint() + 'item',
       data: query,
       dataType: 'jsonp',

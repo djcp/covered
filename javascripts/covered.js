@@ -3,17 +3,20 @@ $.extend({
   apiEndpoint: function(){ return 'http://api.dp.la/dev/' },
 
   constructDoc: function(d,facets){
-    var node = $('<div />').attr({class: 'doc ' + d.data_source, id: 'doc-' + d.id});
+    var node = $('<div />').attr({class: 'doc ' + d.data_source, id: 'doc-' + d.id}), nodeContent = '';
     if(d.id_isbn != undefined){
-      $(d.id_isbn).each(function(i,isbn){
+      $.each(d.id_isbn,function(i,isbn){
       	// var related = $.relatedEditions(isbn);
-        $(node).append($('<img />').attr({src: 'http://covers.openlibrary.org/b/isbn/' + isbn + '-S.jpg', class: 'cover'}));
+      	nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-S.jpg" class="cover" />';
       	});
     }
-    $(node).append(d.title);
-    $(node).append($('<span />').attr({class: 'data_source'}).html(d.data_source));
+    console.log(d);
+    if(d.content_link.length >= 1){nodeContent += '<a href="' + d.content_link[0] + '">';}
+    nodeContent += d.title;
+    if(d.content_link.length >= 1){nodeContent += '</a>';}
+    nodeContent += '<span class="data_source">' + d.data_source + '</span>';
     facets[d.data_source] = (facets[d.data_source] == undefined) ? 1 : (facets[d.data_source] + 1);
-    return node;
+    return node.append(nodeContent);
   },
 	
 	relatedEditions: function(isbn){

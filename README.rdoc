@@ -2,6 +2,11 @@
 
 A dp.la platform API experiment.
 
+== To do
+
+* Create a more flexible, token-based way to searching fields.
+* Create an improved, more flexible view.
+
 == License
 
 This is licensed under the same terms as the dp.la platform itself: https://github.com/dpla/platform

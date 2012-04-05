@@ -110,20 +110,49 @@ $.extend({
     $.each($.searchables(),function(i,el){
       $searchables.find('select').append($('<option/>').attr({value: i}).html(el));
     });
+    $('#add_searchable').click(function(e){
+      e.preventDefault();
+      if($('#term').val() == ''){
+        return;
+      }
+      $('#terms').append(
+        $('<span class="searchable_term" />').attr({data_term_value: $('#term').val(), data_term_searchable: $('#searchable_select').val()}).html('<span class="term_field">' + $('#searchable_select').val() + ' </span>: ' + $('#term').val() + "<sup> X </sup>")
+      );
+      $('form#query')[0].reset();
+      $('#start').val(0);
+      $('#term').focus();
+    });
   },
 
   formatQuery: function(){
-    var query = 'facet:subject&';
+    var query = '';
     $('.searchable_term').each(function(){
       query += 'filter=' + $(this).attr('data_term_searchable') + ':' + $(this).attr('data_term_value') + '&';
     });
     return query;
+  },
+
+  initPagination: function(){
+    $('.paginate').live({
+      click: function(){
+        $('#start').val($(this).attr('data_pagination_start'));
+        $('form#query').submit();
+      }
+    });
   }
 
 });
 
 $(document).ready(function(){
+	$.initPagination();
+	$('.searchable_term sup').live({
+    click: function(){
+      $(this).closest('.searchable_term').remove();
+    }
+  });
+  
   $.initSearchables();
+  
 	$('body').on('click','.doc',function(){
 		var $doc = $(this);
 			$doc.record = $doc.data('d');
@@ -132,22 +161,24 @@ $(document).ready(function(){
 			$.subjectFlickr($doc,singleTerm);
 			}
 		});
-  $('#add_searchable').click(function(e){
-    e.preventDefault();
-    if($('#term').val() == ''){
-      return alert('please enter a term');
-    }
-    $('#terms').append(
-      $('<span class="searchable_term" />').attr({data_term_value: $('#term').val(), data_term_searchable: $('#searchable_select').val()}).html('<span class="term_field">' + $('#searchable_select').val() + ' </span>: ' + $('#term').val())
-    );
 
-  });
-
-  $('#keyword').focus();
+  $('#term').focus();
   $('form#query').submit(function(e){
+
+    $("#add_searchable").click();
+
+    $('#messages').html('');
     e.preventDefault();
     var query = $.formatQuery();
+    if (query == ''){
+      $('#messages').append('Please enter a query term and click "add term".');
+      return false;
+    }
+
+    query += "start=" + $('#start').val() + '&';
+
     $.ajax({
+      cache: true,
       url: $.apiEndpoint() + 'item',
       data: query,
       dataType: 'jsonp',
@@ -156,7 +187,7 @@ $(document).ready(function(){
         $('#target').html('');
         $('#target').isotope('destroy');
         $('#facets').html('');
-        $('#nope').remove();
+        $('#meta').html('');
       },
       complete: function(){
         $('#submit').val('go!');
@@ -172,9 +203,24 @@ $(document).ready(function(){
         $.each(facets, function(key,val){
           $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: "." + key}).html(key + ' - ' + val));
         });
-        $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: '*'}).html('Show all'));
         if(json.docs.length == 0){
-          $('#submit').after('<span id="nope">None found.</span>');
+          $('#messages').html('None found.');
+        } else {
+          $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: '*'}).html('Show all'));
+
+          var start = parseInt(json.start);
+          var limit = parseInt(json.limit);
+          var num_found = parseInt(json.num_found);
+
+          $('#meta').append((start + 1) + ' to ' + ((num_found < (start + limit)) ? num_found : (start + limit) )+ ' of ' + num_found + ' found');
+
+          if(start != 0){
+            $('#meta').prepend($('<span class="paginate" id="prev" />').attr('data_pagination_start',start - limit).html('&laquo; Previous'));
+          }
+          if((start + limit) < num_found){
+            $('#meta').append($('<span class="paginate" id="next" />').attr('data_pagination_start',start + limit).html('Next &raquo;'));
+          }
+          
         }
       }
     });

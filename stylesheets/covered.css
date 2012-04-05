@@ -44,10 +44,40 @@ input, select{
   font-weight: bold;
 }
 
-#nope{
-  margin-left: 1em;
-  font-size: 12px;
+.searchable_term sup{
   font-weight: bold;
+  font-size: 12px;
+}
+  
+.searchable_term sup:hover{
+  cursor: pointer;
+}
+
+#messages{
+  margin: .25em;
+  font-size: 18px;
+  font-weight: bold;
+  color: blue;
+}
+
+#meta{
+  margin-left: 1em;
+}
+
+.paginate{
+  color: red;
+}
+
+.paginate:hover{
+  cursor:pointer;
+}
+
+#next{
+  margin-left: 2em;
+}
+
+#prev{
+  margin-right: 2em;
 }
 
 .filter{

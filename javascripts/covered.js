@@ -39,13 +39,12 @@ $.extend({
       	nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-S.jpg" class="cover" />';
       	});
     }
-    console.log(d);
     if(d.content_link){nodeContent += '<a href="' + d.content_link[0] + '">';}
     nodeContent += (d.title) ? $.ellipsisSubstr(d.title) : 'Untitled Work';
     if(d.content_link){nodeContent += '</a>';}
     nodeContent += '<span class="data_source">' + d.data_source + '</span>';
     facets[d.data_source] = (facets[d.data_source] == undefined) ? 1 : (facets[d.data_source] + 1);
-    return node.append(nodeContent);
+    return node.append(nodeContent).data('d',d);
   },
 	
 	relatedEditions: function(isbn){
@@ -56,9 +55,29 @@ $.extend({
 					$.each(data.list,function(i,record){
 						related.push(record.isbn[0]);
 						});
+					return related;
 					}
 				});
-		return related;
+		},
+	
+	subjectFlickr: function(doc,subject){
+		var subj = encodeURIComponent(subject);
+		$.getJSON('http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=ea0707dc3f4b4b3346806560845986c9&license=1,2,3,4,5,6,7&sort=relevance&format=json&text=' + subj + '&jsoncallback=?')
+			.done(function(data){
+				var output = '<br /><strong><a href="http://www.flickr.com/search/?l=deriv&q=' + subj + '">Flickr results</a> for "' + subject + '"</strong>:<br />';
+				$.each(data.photos.photo,function(i,photo){
+					if(i <= 3){
+						output += $.flickrImage(photo);
+						}
+					});
+				doc.append(output);
+				$('.isotope').isotope('reLayout');
+				});
+		return false;
+		},
+	
+	flickrImage: function(flickrPhoto){
+		return '<a href="http://www.flickr.com/photos/' + flickrPhoto.owner + '/' + flickrPhoto.id + '/"><img src="http://farm' + flickrPhoto.farm + '.staticflickr.com/' + flickrPhoto.server + '/' + flickrPhoto.id + '_' + flickrPhoto.secret + '_s.jpg" alt="" height="75" width="75" /></a>';
 		},
 	
 	ellipsisSubstr: function(inString){
@@ -86,9 +105,10 @@ $.extend({
   },
 
   initSearchables: function(){
-    $('#searchables').append('<select id="searchable_select" />');
+  	var $searchables = $('#searchables');
+    $searchables.append('<select id="searchable_select" />');
     $.each($.searchables(),function(i,el){
-      $('#searchables select').append($('<option/>').attr({value: i}).html(el));
+      $searchables.find('select').append($('<option/>').attr({value: i}).html(el));
     });
     $('#add_searchable').click(function(e){
       e.preventDefault();
@@ -124,15 +144,23 @@ $.extend({
 });
 
 $(document).ready(function(){
-  $.initPagination();
-
-  $('.searchable_term sup').live({
+	$.initPagination();
+	$('.searchable_term sup').live({
     click: function(){
       $(this).closest('.searchable_term').remove();
     }
   });
-
+  
   $.initSearchables();
+  
+	$('body').on('click','.doc',function(){
+		var $doc = $(this);
+			$doc.record = $doc.data('d');
+		if($doc.record.subject){
+			var singleTerm = $.trim($doc.record.subject[0].split(',')[0]);
+			$.subjectFlickr($doc,singleTerm);
+			}
+		});
 
   $('#term').focus();
   $('form#query').submit(function(e){

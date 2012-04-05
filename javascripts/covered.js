@@ -90,36 +90,52 @@ $.extend({
     $.each($.searchables(),function(i,el){
       $('#searchables select').append($('<option/>').attr({value: i}).html(el));
     });
+    $('#add_searchable').click(function(e){
+      e.preventDefault();
+      if($('#term').val() == ''){
+        return;
+      }
+      $('#terms').append(
+        $('<span class="searchable_term" />').attr({data_term_value: $('#term').val(), data_term_searchable: $('#searchable_select').val()}).html('<span class="term_field">' + $('#searchable_select').val() + ' </span>: ' + $('#term').val() + "<sup> X </sup>")
+      );
+      $('form#query')[0].reset();
+      $('#term').focus();
+    });
   },
 
   formatQuery: function(){
-    var query = 'facet:subject&';
+    var query = '';
     $('.searchable_term').each(function(){
       query += 'filter=' + $(this).attr('data_term_searchable') + ':' + $(this).attr('data_term_value') + '&';
     });
     return query;
-  }
+  },
 
 });
 
 $(document).ready(function(){
-  $.initSearchables();
 
-  $('#add_searchable').click(function(e){
-    e.preventDefault();
-    if($('#term').val() == ''){
-      return alert('please enter a term');
+  $('.searchable_term sup').live({
+    click: function(){
+      $(this).closest('.searchable_term').remove();
     }
-    $('#terms').append(
-      $('<span class="searchable_term" />').attr({data_term_value: $('#term').val(), data_term_searchable: $('#searchable_select').val()}).html('<span class="term_field">' + $('#searchable_select').val() + ' </span>: ' + $('#term').val())
-    );
-
   });
 
-  $('#keyword').focus();
+  $.initSearchables();
+
+  $('#term').focus();
   $('form#query').submit(function(e){
+
+    $("#add_searchable").click();
+
+    $('#messages').html('');
     e.preventDefault();
     var query = $.formatQuery();
+    if (query == ''){
+      $('#messages').append('Please enter a query term and click "add term".');
+      return false;
+    }
+
     $.ajax({
       cache: true,
       url: $.apiEndpoint() + 'item',
@@ -130,7 +146,6 @@ $(document).ready(function(){
         $('#target').html('');
         $('#target').isotope('destroy');
         $('#facets').html('');
-        $('#nope').remove();
       },
       complete: function(){
         $('#submit').val('go!');
@@ -146,9 +161,11 @@ $(document).ready(function(){
         $.each(facets, function(key,val){
           $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: "." + key}).html(key + ' - ' + val));
         });
-        $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: '*'}).html('Show all'));
         if(json.docs.length == 0){
-          $('#submit').after('<span id="nope">None found.</span>');
+          $('#messages').html('None found.');
+        } else {
+          $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: '*'}).html('Show all'));
+          $('#meta').append(json.num_found + ' found');
         }
       }
     });

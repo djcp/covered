@@ -1,5 +1,7 @@
 $.extend({
+
   apiEndpoint: function(){ return 'http://api.dp.la/dev/' },
+
   constructDoc: function(d,facets){
     var node = $('<div />').attr({class: 'doc ' + d.data_source, id: 'doc-' + d.id});
     if(d.id_isbn != undefined){
@@ -12,15 +14,23 @@ $.extend({
     facets[d.data_source] = 1;
     return node;
   },
+
   initIsotope: function(){
     var isotope_obj = $('#target').isotope({
+      columnWidth: 300,
       itemSelector : '.doc',
-      layoutMode : 'fitRows'
+      layoutMode : 'masonry'
     });
+  },
+
+  postInit: function(){
     $('.filter').click(function(e){
-      $(isotope_obj).isotope({filter: $(this).attr('data_filter_class')});
+      $('#target').isotope({filter: $(this).attr('data_filter_class')});
     });
+    // relayout as cover images may've effected container height.
+    setTimeout(function(){$('#target').isotope('reLayout')}, 500);
   }
+
 });
 
 $(document).ready(function(){
@@ -39,20 +49,20 @@ $(document).ready(function(){
       },
       complete: function(){
         $('#submit').val('go!');
-        $.initIsotope();
+        $.postInit();
       },
       success: function(json){
+        $.initIsotope();
         console.log(json);
         var facets = {};
         $(json.docs).each(function(i,el){
-          $('#target').append($.constructDoc(el,facets));
+          $('#target').isotope('insert',$.constructDoc(el,facets));
         });
         $.each(facets, function(key,val){
           $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: "." + key}).html(key));
         });
         $('#facets').append($('<span/>').attr({class: 'filter', data_filter_class: '*'}).html('Show all'));
       }
-
     });
   });
 });

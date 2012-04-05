@@ -39,7 +39,7 @@ $.extend({
       	nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-S.jpg" class="cover" />';
       	});
     }
-    if(d.content_link){nodeContent += '<a href="' + d.content_link[0] + '">';}
+    if(d.content_link){nodeContent += '<a target="_blank" href="' + d.content_link[0] + '">';}
     nodeContent += (d.title) ? $.ellipsisSubstr(d.title) : 'Untitled Work';
     if(d.content_link){nodeContent += '</a>';}
     nodeContent += '<span class="data_source">' + d.data_source + '</span>';
@@ -64,14 +64,16 @@ $.extend({
 		var subj = encodeURIComponent(subject);
 		$.getJSON('http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=ea0707dc3f4b4b3346806560845986c9&license=1,2,3,4,5,6,7&sort=relevance&format=json&text=' + subj + '&jsoncallback=?')
 			.done(function(data){
-				var output = '<br /><strong><a href="http://www.flickr.com/search/?l=deriv&q=' + subj + '">Flickr results</a> for "' + subject + '"</strong>:<br />';
-				$.each(data.photos.photo,function(i,photo){
-					if(i <= 3){
-						output += $.flickrImage(photo);
-						}
-					});
-				doc.append(output);
-				$('.isotope').isotope('reLayout');
+				if(data.photos.photo){
+					var output = '<br /><strong><a target="_blank" href="http://www.flickr.com/search/?l=deriv&q=' + subj + '">Flickr results</a> for "' + subject + '"</strong>:<br />';
+					$.each(data.photos.photo,function(i,photo){
+						if(i <= 3){
+							output += $.flickrImage(photo);
+							}
+						});
+					doc.append(output);
+					$('.isotope').isotope('reLayout');
+					}
 				});
 		return false;
 		},
@@ -158,7 +160,10 @@ $(document).ready(function(){
 			$doc.record = $doc.data('d');
 		if($doc.record.subject){
 			var singleTerm = $.trim($doc.record.subject[0].split(',')[0]);
-			$.subjectFlickr($doc,singleTerm);
+			if($doc.data('flickrd') !== true){
+				$.subjectFlickr($doc,singleTerm);
+				$doc.data('flickrd',true);
+				}
 			}
 		});
 

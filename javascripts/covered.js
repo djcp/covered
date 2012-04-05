@@ -11,9 +11,9 @@ $.extend({
       	});
     }
     console.log(d);
-    if(d.content_link.length >= 1){nodeContent += '<a href="' + d.content_link[0] + '">';}
-    nodeContent += d.title;
-    if(d.content_link.length >= 1){nodeContent += '</a>';}
+    if(d.content_link){nodeContent += '<a href="' + d.content_link[0] + '">';}
+    nodeContent += (d.title) ? $.ellipsisSubstr(d.title) : 'Untitled Work';
+    if(d.content_link){nodeContent += '</a>';}
     nodeContent += '<span class="data_source">' + d.data_source + '</span>';
     facets[d.data_source] = (facets[d.data_source] == undefined) ? 1 : (facets[d.data_source] + 1);
     return node.append(nodeContent);
@@ -30,6 +30,14 @@ $.extend({
 					}
 				});
 		return related;
+		},
+	
+	ellipsisSubstr: function(inString){
+		var max = arguments[1] || 100, suffix = arguments[2] || '…'; 
+		if(inString.length >= max){
+			return inString.substr(0,max) + suffix;
+			}
+		else{return inString;}
 		},
 	
   initIsotope: function(){

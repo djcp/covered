@@ -51,7 +51,7 @@ $.extend({
 		$.getJSON('http://xisbn.worldcat.org/webservices/xid/isbn/' + isbn + '?method=getEditionsa&format=json&fl=*&callback=?')
 			.done(function(data){
 				if(data.list.length >= 1){
-					var output = '<br /><strong>LibraryThing Jackets</strong>:<br />';
+					var output = '<br /><strong><a target="_blank" href="http://www.librarything.com/isbn/' + isbn + '">LibraryThing</a> Jackets</strong>:<br />';
 					$.each(data.list,function(i,record){
 						if(i <= 10){
 						output += '<img src="http://covers.librarything.com/devkey/67af2723f6491710c32b6d9b27bcaa0d/small/isbn/' + record.isbn[0] + '" alt="" />';

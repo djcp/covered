@@ -47,17 +47,21 @@ $.extend({
     return node.append(nodeContent).data('d',d);
   },
 	
-	relatedEditions: function(isbn){
-		var related = [];
+	relatedEditions: function(doc,isbn){
 		$.getJSON('http://xisbn.worldcat.org/webservices/xid/isbn/' + isbn + '?method=getEditionsa&format=json&fl=*&callback=?')
 			.done(function(data){
 				if(data.list.length >= 1){
+					var output = '<br /><strong><a target="_blank" href="http://www.librarything.com/isbn/' + isbn + '">LibraryThing</a> Jackets</strong>:<br />';
 					$.each(data.list,function(i,record){
-						related.push(record.isbn[0]);
+						if(i <= 10){
+						output += '<img src="http://covers.librarything.com/devkey/67af2723f6491710c32b6d9b27bcaa0d/small/isbn/' + record.isbn[0] + '" alt="" />';
+						 }
 						});
-					return related;
+					doc.append(output);
+					$('.isotope').isotope('reLayout');
 					}
 				});
+		return false;
 		},
 	
 	subjectFlickr: function(doc,subject){
@@ -164,6 +168,10 @@ $(document).ready(function(){
 				$.subjectFlickr($doc,singleTerm);
 				$doc.data('flickrd',true);
 				}
+			}
+		if($doc.record.id_isbn[0] && $doc.data('lted') !== true){
+			$.relatedEditions($doc,$doc.record.id_isbn[0]);
+			$doc.data('lted',true);
 			}
 		});
 

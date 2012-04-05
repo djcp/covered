@@ -7,6 +7,10 @@ body{
   padding: 0px;
 }
 
+br{
+	clear:both;
+	}
+
 header{
   background-color: black;
   color: white;

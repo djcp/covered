@@ -20,7 +20,7 @@ $.extend({
       'dpla.oclc': 'OCLC',
       'dpla.lccn': 'LCCN',
       'dpla.call_num': 'Call Number',
-      'dpla.content_link': 'Context Link',
+      'dpla.content_link': 'Content Link',
       'dpla.contributor': 'Contributor',
       'dpla.resource_type': 'Resource Type'
     };
@@ -32,17 +32,19 @@ $.extend({
 
     if(typeof(d['dpla.isbn']) === 'object'){
       var isbn = d['dpla.isbn'][0].split('%%')[0];
-      nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-S.jpg" class="cover" />';
+      nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-M.jpg" class="cover" />';
     }else if(typeof(d['dpla.isbn'] == 'string')){
-      nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + d['dpla.isbn'] + '-S.jpg" class="cover" />';
+      nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + d['dpla.isbn'] + '-M.jpg" class="cover" />';
     }
 
     if(d['dpla.content_link']){
       nodeContent += '<a target="_blank" href="' + d['dpla.content_link'] + '">';
     }
-    nodeContent += (d['dpla.title']) ? $.ellipsisSubstr(d['dpla.title']) : 'Untitled Work';
-    if(d.content_link){nodeContent += '</a>';}
-    nodeContent += '<span class="data_source">' + d['dpla.contributor'] + '</span>';
+    nodeContent += '<span class="title">' + ( (d['dpla.title']) ? $.ellipsisSubstr(d['dpla.title']) : 'Untitled Work' ) + '</span>';
+    if(d['dpla.content_link']){
+      nodeContent += '</a>';
+    }
+    nodeContent += '<br/><span class="data_source">' + d['dpla.contributor'] + '</span>';
     facets[d['dpla.contributor']] = (facets[d['dpla.contributor']] == undefined) ? 1 : (facets[d['dpla.contributor']] + 1);
     return node.append(nodeContent).data('d',d);
   },
@@ -107,7 +109,7 @@ $.extend({
       $('#target').isotope({filter: $(this).attr('data_filter_class')});
     });
     // relayout as cover images may've effected container height.
-    setTimeout(function(){$('#target').isotope('reLayout')}, 500);
+    setTimeout(function(){$('#target').isotope('reLayout')}, 1000);
   },
 
   initSearchables: function(){

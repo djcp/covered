@@ -108,22 +108,23 @@ input, select{
 }
 
 .doc{
-  width:280px;
+  width:350px;
   background-color: #ccc;
-  margin: 0px 1em 1em 0px;
-  padding: .25em;
+  margin: 0px 10px 10px 0px;
+  padding: 20px;
   border-radius: 5px;
   clear: both;
   font-size: 10pt;
   cursor:pointer;
 }
-	.doc:hover{
-		background-color:#999;
-	}
-	.doc img{
-			float:left;
-			margin:0 5px 5px 0;
-		}
+.doc:hover{
+  background-color:#999;
+}
+
+.doc img{
+  float:left;
+  margin:0 5px 5px 0;
+}
 
 .doc .data_source{
   font-size: 10px;
@@ -133,4 +134,8 @@ input, select{
 .doc .cover{
   float: left;
   margin: 0px 5px 0px 0px;
+}
+
+.doc .title{
+  font-weight: bold;
 }

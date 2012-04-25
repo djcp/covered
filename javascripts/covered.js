@@ -1,49 +1,49 @@
 $.extend({
 
-  apiEndpoint: function(){ return 'http://api.dp.la/dev/' },
+  apiEndpoint: function(){ return 'http://api.dp.la/v0.03/' },
 
   searchables: function(){
     return {
-      keyword: 'All fields',
-      title: 'Title',
-      title_keyword: 'Title, keyword',
-      creator: 'Creator',
-      creator_keyword: 'Creator, keyword',
-      date: 'Date',
-      description: 'Description',
-      description_keyword: 'Description, keyword',
-      subject: 'Subject',
-      subject_keyword: 'Subject, keyword',
-      publisher: 'Publisher',
-      language: 'Language',
-      id_isbn: 'ISBN',
-      id_oclc: 'OCLC',
-      id_lccn: 'LCCN',
-      id_inst: 'Partner Id',
-      call_num: 'Call Number',
-      height: 'Height',
-      page_count: 'Page Count',
-      relation: 'Relation',
-      content_link: 'Context Link',
-      rights: 'Rights',
-      data_source: 'Data Source',
-      resource_type: 'Resource Type'
+      'dpla.keyword': 'All fields',
+      'dpla.title': 'Title',
+      'dpla.title_keyword': 'Title, keyword',
+      'dpla.creator': 'Creator',
+      'dpla.creator_keyword': 'Creator, keyword',
+      'dpla.date': 'Date',
+      'dpla.description': 'Description',
+      'dpla.description_keyword': 'Description, keyword',
+      'dpla.subject': 'Subject',
+      'dpla.subject_keyword': 'Subject, keyword',
+      'dpla.publisher': 'Publisher',
+      'dpla.language': 'Language',
+      'dpla.isbn': 'ISBN',
+      'dpla.oclc': 'OCLC',
+      'dpla.lccn': 'LCCN',
+      'dpla.call_num': 'Call Number',
+      'dpla.content_link': 'Context Link',
+      'dpla.contributor': 'Contributor',
+      'dpla.resource_type': 'Resource Type'
     };
   },
 
   constructDoc: function(d,facets){
-    var node = $('<div />').attr({class: 'doc ' + d.data_source, id: 'doc-' + d.id}), nodeContent = '';
-    if(d.id_isbn != undefined){
-      $.each(d.id_isbn,function(i,isbn){
-      	// var related = $.relatedEditions(isbn);
-      	nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-S.jpg" class="cover" />';
-      	});
+    var node = $('<div />').attr({class: 'doc ' + d['dpla.contributor'], id: 'doc-' + d['dpla.id']});
+    var nodeContent = '';
+
+    if(typeof(d['dpla.isbn']) === 'object'){
+      var isbn = d['dpla.isbn'][0].split('%%')[0];
+      nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-S.jpg" class="cover" />';
+    }else if(typeof(d['dpla.isbn'] == 'string')){
+      nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + d['dpla.isbn'] + '-S.jpg" class="cover" />';
     }
-    if(d.content_link){nodeContent += '<a target="_blank" href="' + d.content_link[0] + '">';}
-    nodeContent += (d.title) ? $.ellipsisSubstr(d.title) : 'Untitled Work';
+
+    if(d['dpla.content_link']){
+      nodeContent += '<a target="_blank" href="' + d['dpla.content_link'] + '">';
+    }
+    nodeContent += (d['dpla.title']) ? $.ellipsisSubstr(d['dpla.title']) : 'Untitled Work';
     if(d.content_link){nodeContent += '</a>';}
-    nodeContent += '<span class="data_source">' + d.data_source + '</span>';
-    facets[d.data_source] = (facets[d.data_source] == undefined) ? 1 : (facets[d.data_source] + 1);
+    nodeContent += '<span class="data_source">' + d['dpla.contributor'] + '</span>';
+    facets[d['dpla.contributor']] = (facets[d['dpla.contributor']] == undefined) ? 1 : (facets[d['dpla.contributor']] + 1);
     return node.append(nodeContent).data('d',d);
   },
 	
@@ -162,13 +162,14 @@ $(document).ready(function(){
 	$('body').on('click','.doc',function(){
 		var $doc = $(this);
 			$doc.record = $doc.data('d');
-		if($doc.record.subject){
+/*		if($doc.record.subject){
 			var singleTerm = $.trim($doc.record.subject[0].split(',')[0]);
 			if($doc.data('flickrd') !== true){
 				$.subjectFlickr($doc,singleTerm);
 				$doc.data('flickrd',true);
 				}
-			}
+      }
+      */
 		if($doc.record.id_isbn[0] && $doc.data('lted') !== true){
 			$.relatedEditions($doc,$doc.record.id_isbn[0]);
 			$doc.data('lted',true);

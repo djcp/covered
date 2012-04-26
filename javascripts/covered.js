@@ -32,24 +32,22 @@ $.extend({
 
     if(d['dpla.content_link']){
       nodeContent += '<a target="_blank" href="' + d['dpla.content_link'] + '">';
+      alert('link found!' + d['dpla.content_link']);
     }
     nodeContent += '<h3 class="title">' + ( (d['dpla.title']) ? $.ellipsisSubstr(d['dpla.title']) : 'Untitled Work' ).replace(/\\|\//g,'') + '</h3>';
     if(d['dpla.content_link']){
       nodeContent += '</a>';
     }
 
-    nodeContent += $.insertOpenLibraryCover(d);
+    var isbn = ((typeof(d['dpla.isbn']) === 'object') ? d['dpla.isbn'][0].split('%%')[0] : d['dpla.isbn']);
+    nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-M.jpg" class="cover" />';
+
+    d['normalized_isbn'] = isbn;
+
     nodeContent += '<span class="date">' + ((typeof(d['dpla.date']) === 'object') ? d['dpla.date'][0] : d['dpla.date']) + '</span>';
     nodeContent += '<br/><span class="data_source">' + d['dpla.contributor'] + '</span>';
     facets[d['dpla.contributor']] = (facets[d['dpla.contributor']] == undefined) ? 1 : (facets[d['dpla.contributor']] + 1);
     return node.append(nodeContent).data('d',d);
-  },
-
-  insertOpenLibraryCover: function(d){
-    var output = '';
-    var isbn = ((typeof(d['dpla.isbn']) === 'object') ? d['dpla.isbn'][0].split('%%')[0] : d['dpla.isbn']);
-    output += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-M.jpg" class="cover" />';
-    return output;
   },
 
 	relatedEditions: function(doc,isbn){
@@ -63,7 +61,7 @@ $.extend({
 						 }
 						});
 					doc.append(output);
-					$('.isotope').isotope('reLayout');
+          setTimeout(function(){$('#target').isotope('reLayout')}, 1000);
 					}
 				});
 		return false;
@@ -176,8 +174,8 @@ $(document).ready(function(){
 				}
       }
       */
-		if($doc.record.id_isbn[0] && $doc.data('lted') !== true){
-			$.relatedEditions($doc,$doc.record.id_isbn[0]);
+		if($doc.record['normalized_isbn'] && $doc.data('lted') !== true){
+			$.relatedEditions($doc,$doc.record['normalized_isbn']);
 			$doc.data('lted',true);
 			}
 		});

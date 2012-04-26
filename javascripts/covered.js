@@ -32,7 +32,6 @@ $.extend({
 
     if(d['dpla.content_link']){
       nodeContent += '<a target="_blank" href="' + d['dpla.content_link'] + '">';
-      alert('link found!' + d['dpla.content_link']);
     }
     nodeContent += '<h3 class="title">' + ( (d['dpla.title']) ? $.ellipsisSubstr(d['dpla.title']) : 'Untitled Work' ).replace(/\\|\//g,'') + '</h3>';
     if(d['dpla.content_link']){
@@ -40,7 +39,7 @@ $.extend({
     }
 
     var isbn = ((typeof(d['dpla.isbn']) === 'object') ? d['dpla.isbn'][0].split('%%')[0] : d['dpla.isbn']);
-    nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-M.jpg" class="cover" />';
+    nodeContent += '<a href="http://openlibrary.org/isbn/' + isbn + '"><img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-M.jpg" class="cover" /></a>';
 
     d['normalized_isbn'] = isbn;
 

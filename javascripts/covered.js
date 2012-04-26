@@ -45,6 +45,7 @@ $.extend({
 
     nodeContent += '<span class="date">' + ((typeof(d['dpla.date']) === 'object') ? d['dpla.date'][0] : d['dpla.date']) + '</span>';
     nodeContent += '<br/><span class="data_source">' + d['dpla.contributor'] + '</span>';
+    nodeContent += '<br/><span><a href="http://shlv.me/add-item/?title=' + d['dpla.title'] + '&creator=' + d['dpla.creator'][0] + '&isbn=' + isbn + "&link=http://api.dp.la/v0.03/&content_type=Book" + '">Put on my Shlv.me shelf</a></span>';
     facets[d['dpla.contributor']] = (facets[d['dpla.contributor']] == undefined) ? 1 : (facets[d['dpla.contributor']] + 1);
     return node.append(nodeContent).data('d',d);
   },

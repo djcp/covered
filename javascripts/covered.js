@@ -30,25 +30,28 @@ $.extend({
     var node = $('<div />').attr({class: 'doc ' + d['dpla.contributor'], id: 'doc-' + d['dpla.id']});
     var nodeContent = '';
 
-    if(typeof(d['dpla.isbn']) === 'object'){
-      var isbn = d['dpla.isbn'][0].split('%%')[0];
-      nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-M.jpg" class="cover" />';
-    }else if(typeof(d['dpla.isbn'] == 'string')){
-      nodeContent += '<img src="http://covers.openlibrary.org/b/isbn/' + d['dpla.isbn'] + '-M.jpg" class="cover" />';
-    }
-
     if(d['dpla.content_link']){
       nodeContent += '<a target="_blank" href="' + d['dpla.content_link'] + '">';
     }
-    nodeContent += '<span class="title">' + ( (d['dpla.title']) ? $.ellipsisSubstr(d['dpla.title']) : 'Untitled Work' ) + '</span>';
+    nodeContent += '<h3 class="title">' + ( (d['dpla.title']) ? $.ellipsisSubstr(d['dpla.title']) : 'Untitled Work' ).replace(/\\|\//g,'') + '</h3>';
     if(d['dpla.content_link']){
       nodeContent += '</a>';
     }
+
+    nodeContent += $.insertOpenLibraryCover(d);
+    nodeContent += '<span class="date">' + ((typeof(d['dpla.date']) === 'object') ? d['dpla.date'][0] : d['dpla.date']) + '</span>';
     nodeContent += '<br/><span class="data_source">' + d['dpla.contributor'] + '</span>';
     facets[d['dpla.contributor']] = (facets[d['dpla.contributor']] == undefined) ? 1 : (facets[d['dpla.contributor']] + 1);
     return node.append(nodeContent).data('d',d);
   },
-	
+
+  insertOpenLibraryCover: function(d){
+    var output = '';
+    var isbn = ((typeof(d['dpla.isbn']) === 'object') ? d['dpla.isbn'][0].split('%%')[0] : d['dpla.isbn']);
+    output += '<img src="http://covers.openlibrary.org/b/isbn/' + isbn + '-M.jpg" class="cover" />';
+    return output;
+  },
+
 	relatedEditions: function(doc,isbn){
 		$.getJSON('http://xisbn.worldcat.org/webservices/xid/isbn/' + isbn + '?method=getEditionsa&format=json&fl=*&callback=?')
 			.done(function(data){
@@ -156,6 +159,7 @@ $(document).ready(function(){
 	$('.searchable_term sup').live({
     click: function(){
       $(this).closest('.searchable_term').remove();
+      $('#submit').click();
     }
   });
   
@@ -203,7 +207,7 @@ $(document).ready(function(){
         $('#target').html('');
         $('#target').isotope('destroy');
         $('#facets').html('');
-        $('#meta').html('');
+        $('.meta_inf').html('');
       },
       complete: function(){
         $('#submit').val('go!');
@@ -228,13 +232,13 @@ $(document).ready(function(){
           var limit = parseInt(json.limit);
           var num_found = parseInt(json.num_found);
 
-          $('#meta').append((start + 1) + ' to ' + ((num_found < (start + limit)) ? num_found : (start + limit) )+ ' of ' + num_found + ' found');
+          $('.meta_inf').append((start + 1) + ' to ' + ((num_found < (start + limit)) ? num_found : (start + limit) )+ ' of ' + num_found + ' found');
 
           if(start != 0){
-            $('#meta').prepend($('<span class="paginate" id="prev" />').attr('data_pagination_start',start - limit).html('&laquo; Previous'));
+            $('.meta_inf').prepend($('<span class="paginate" id="prev" />').attr('data_pagination_start',start - limit).html('&laquo; Previous'));
           }
           if((start + limit) < num_found){
-            $('#meta').append($('<span class="paginate" id="next" />').attr('data_pagination_start',start + limit).html('Next &raquo;'));
+            $('.meta_inf').append($('<span class="paginate" id="next" />').attr('data_pagination_start',start + limit).html('Next &raquo;'));
           }
           
         }

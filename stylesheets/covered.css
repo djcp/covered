@@ -64,9 +64,15 @@ input, select{
   color: blue;
 }
 
-#meta{
+.meta_inf{
   text-align: center;
   margin-left: 1em;
+}
+
+.footer.meta_inf{
+  margin: 10px 0px 20px 0px;
+  padding-top: 10px;
+  border-top: 2px dotted #ccc;
 }
 
 .paginate{
@@ -128,7 +134,6 @@ input, select{
 
 .doc .data_source{
   font-size: 10px;
-  margin-left: 1em;
 }
 
 .doc .cover{
@@ -137,5 +142,6 @@ input, select{
 }
 
 .doc .title{
+  margin-top: 0px;
   font-weight: bold;
 }
